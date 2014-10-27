@@ -1,0 +1,30 @@
+<configuration>
+
+    <property file="${CATALINA_BASE}/conf/logback-logstash-${columbusEnv}.properties" />
+
+    <appender name="outputfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/columbus-api-access.log</File>
+        <Append>true</Append>
+        <encoder>
+            <pattern>common</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/columbus-api-access.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="stash" class="com.logback.logstash.appender.AccessSocketAppender">
+        <remoteHost>${logstash.host}</remoteHost>
+        <port>${logstash.port}</port>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.logback.logstash.encoder.AccessLogstashLayout" >
+                <channel>columbus-api-access</channel>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="outputfile"/>
+    <appender-ref ref="stash" />
+
+</configuration>
+
